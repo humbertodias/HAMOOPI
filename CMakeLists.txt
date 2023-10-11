@@ -6,7 +6,10 @@ include(FetchContent)
 FetchContent_Declare(
         allegro5
         GIT_REPOSITORY https://github.com/liballeg/allegro5.git
-        GIT_TAG        5.2.8.0
+        GIT_BRANCH master
+        GIT_SHALLOW TRUE # get only last version
+        GIT_PROGRESS TRUE # show progress of download
+        USES_TERMINAL_DOWNLOAD TRUE # show progress in ninja generator
 )
 FetchContent_GetProperties(allegro5)
 FetchContent_Populate(allegro5)
@@ -15,19 +18,27 @@ FetchContent_Populate(allegro5)
 include(FetchContent)
 FetchContent_Declare(
         allegro4
-        GIT_REPOSITORY https://github.com/humbertodias/Allegro-Legacy
-        GIT_BRANCH        master
+        GIT_REPOSITORY https://github.com/humbertodias/Allegro-Legacy.git
+        GIT_BRANCH master
+        GIT_SHALLOW TRUE # get only last version
+        GIT_PROGRESS TRUE # show progress of download
+        USES_TERMINAL_DOWNLOAD TRUE # show progress in ninja generator
 )
 FetchContent_GetProperties(allegro4)
-if(NOT allegro4_POPULATED)
+if (NOT allegro4_POPULATED)
     FetchContent_Populate(allegro4)
     if (MSVC)
         set(SHARED ON)
-    else()
+    else ()
         set(SHARED OFF)
-    endif()
+    endif ()
     add_subdirectory(${allegro4_SOURCE_DIR} ${allegro4_BINARY_DIR} EXCLUDE_FROM_ALL)
-endif()
+endif ()
+
+IF (APPLE)
+    # Fix linking on 10.14+. See https://stackoverflow.com/questions/54068035
+    LINK_DIRECTORIES(${allegro5_BINARY_DIR}/lib)
+ENDIF ()
 
 # main code
 add_executable(${PROJECT_NAME} HAMOOPI.cpp)
@@ -38,9 +49,9 @@ allegro5_SOURCE_DIR: ${allegro5_SOURCE_DIR}/include allegro5_BINARY_DIR: ${alleg
 allegro4_SOURCE_DIR: ${allegro4_SOURCE_DIR}/include allegro4_BINARY_DIR: ${allegro4_BINARY_DIR}/include
 ")
 
-target_include_directories(${PROJECT_NAME} PUBLIC 
-${allegro5_SOURCE_DIR}/include ${allegro5_BINARY_DIR}/include
-${allegro4_SOURCE_DIR}/include ${allegro4_BINARY_DIR}/include
+target_include_directories(${PROJECT_NAME} PUBLIC
+        ${allegro5_SOURCE_DIR}/include ${allegro5_BINARY_DIR}/include
+        ${allegro4_SOURCE_DIR}/include ${allegro4_BINARY_DIR}/include
 )
 # Link with dependencies
 target_link_libraries(${PROJECT_NAME} allegro)
