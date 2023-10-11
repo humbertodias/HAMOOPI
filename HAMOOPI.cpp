@@ -578,7 +578,7 @@ char ED_Name_Display[50]="char1";
 // INICIALIZACAO ALLEGRO ------------------------------------------------[**02]
 ///////////////////////////////////////////////////////////////////////////////
 
-int main()
+int main(int argc,char **argv)
 {
 set_uformat(U_UTF8); //permite usar acentuação no jogo (diacríticos)
 allegro_init(); install_timer(); install_keyboard(); install_mouse(); set_color_depth(32);
